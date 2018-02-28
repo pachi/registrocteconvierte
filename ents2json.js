@@ -32,6 +32,7 @@ Genera el archivo de datos de entidades dataents.json al ejecutar:
 const fs = require("fs");
 const path = require("path");
 const child_process = require("child_process");
+const utils = require("./utils");
 
 function findXML(args) {
   if (args.length < 3) {
@@ -54,7 +55,7 @@ function findXML(args) {
 // Crea archivos csv, xlsx y extrae .xml y .rels para sacar URLs de registros
 function generateAuxFiles(xmlpath) {
   console.log("Generando archivos temporales: .csv, .xslx y .refs");
-  child_process.execSync("mkdir -p process/ents");
+  child_process.execSync("mkdir -p ./process/ents");
   //  Filtro para que entrecomille todos los campos y alguna cosa más. Ver opciones de unoconv
   child_process.execSync(
     `unoconv --listener && unoconv -f csv -e FilterOptions=44,34,0,1,1/5/2/1/3/1/4/1,,true,,false -o ./process/ents/salida_ents.csv "${xmlpath}"`
@@ -63,14 +64,14 @@ function generateAuxFiles(xmlpath) {
     `unoconv --listener && unoconv -f xlsx -o ./process/ents/salida_ents.xlsx "${xmlpath}"`
   );
   child_process.execSync(
-    `unzip -oj process/ents/salida_ents.xlsx "xl/worksheets/_rels/*.rels" -d ./process/ents/`
+    `unzip -oj ./process/ents/salida_ents.xlsx "xl/worksheets/_rels/*.rels" -d ./process/ents/`
   );
 }
 
 // Convierte lista de campos a objeto
 function lst2obj(lst) {
   const [
-    id,
+    cod,
     nif,
     empresa,
     referencia,
@@ -87,11 +88,11 @@ function lst2obj(lst) {
     fecha_baja,
     email,
     fax,
-    dresponsable,
+    declaraciones,
     alcance
   ] = lst;
   return {
-    id,
+    cod,
     nif,
     empresa,
     referencia,
@@ -108,7 +109,7 @@ function lst2obj(lst) {
     fecha_baja,
     email,
     fax,
-    dresponsable,
+    declaraciones,
     alcance
   };
 }
@@ -177,7 +178,7 @@ function parseCSV() {
 function agrupaLineasAdicionales(valuelines) {
   function collected2fields(collected) {
     let state = "START";
-    dresponsable = new Array();
+    declaraciones = new Array();
     alcance = new Array();
     for (const el of collected) {
       if (el.includes("DECLARACION_RESPONSABLE")) {
@@ -186,13 +187,13 @@ function agrupaLineasAdicionales(valuelines) {
         state = "ALCANCE";
       } else if (state === "DRESP") {
         const content = el.filter(e => e !== "");
-        dresponsable.push(...content);
+        declaraciones.push(...content);
       } else if (state === "ALCANCE") {
         const [concepto, alcance_loe, fase] = el.slice(-3);
         alcance.push({ concepto, alcance_loe, fase });
       }
     }
-    return { dresponsable, alcance };
+    return { declaraciones, alcance };
   }
 
   const objs = [];
@@ -203,7 +204,7 @@ function agrupaLineasAdicionales(valuelines) {
       const lastobj = objs.pop();
       if (lastobj) {
         const coll = collected2fields(currlines);
-        lastobj.dresponsable = coll.dresponsable;
+        lastobj.declaraciones = coll.declaraciones;
         lastobj.alcance = coll.alcance;
         objs.push(lastobj);
       }
@@ -263,9 +264,17 @@ function urlFix(datalist) {
   return datalist;
 }
 
+function addCcaa(datalist) {
+  for (let obj of datalist) {
+    obj.comunidad = utils.prov2ca[obj.provincia];
+  }
+  return datalist;
+}
+
 generateAuxFiles(findXML(process.argv));
 const datalist = parseCSV();
 urlFix(datalist);
+addCcaa(datalist);
 
 console.log(`Localizadas ${datalist.length} entidades`);
 const jsonstring = JSON.stringify(datalist, null, " ");
