@@ -1,7 +1,6 @@
-# Conversión de informes del Registro Entidades y Laboratorios de control de calidad de la edificación
+# Conversión de informes del Registro de Entidades y Laboratorios de control de calidad de la edificación
 
-Estas herramientas permiten la conversión de los informes del registro de entidades y laboratorios de control de calidad de la edificación en formato de hoja de cálculo `.xls`
-al formato JSON, para su procesado automático.
+Estas herramientas permiten la conversión de los informes del [Registro de entidades y laboratorios de control de calidad de la edificación](https://www.codigotecnico.org/index.php/menu-05-registro-entidades-laboratorios.1.html) en formato de hoja de cálculo `.xls` al formato JSON, para su procesado automático.
 
 La herramienta `labs2json.js` convierte un archivo `.xls` de informe de laboratorios a JSON
 
@@ -9,9 +8,9 @@ La herramienta `ents2json.js` convierte un archivo `.xls` de informe de entidade
 
 ## Instalación
 
-Los script se han probado con `Node.js` v8.9.4 y el intérprete debe estar instalado para el uso de las herramientas.
+Los script funcionan con el intérprete [`Node.js`](https://nodejs.org/en/) y se han desarrollado usando la versión v8.9.4.
 
-También deben estar disponibles la herramienta `unoconv`, a la que se llama internamente para realizar conversiones de formato, y la herramienta `unzip`.
+También deben estar disponibles la herramienta [`unoconv`](http://dag.wiee.rs/home-made/unoconv/), a la que se llama internamente para realizar conversiones de formato, y la herramienta [`unzip`](http://www.info-zip.org/pub/infozip/).
 
 Las herramientas se han probado con `unoconv` v0.7 y `unzip` v6.00.
 
