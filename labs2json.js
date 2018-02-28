@@ -249,6 +249,10 @@ function urlFix(datalist) {
 
 function addCcaa(datalist) {
   for (let obj of datalist) {
+    const comunidad = utils.prov2ca[obj.provincia.replace(' / ', '/')];
+    if (!comunidad) {
+      console.log("No se ha encontrado la comunidad para la provincia ", obj.provincia);
+    }
     obj.comunidad = utils.prov2ca[obj.provincia];
   }
   return datalist;
