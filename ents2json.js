@@ -201,7 +201,9 @@ function agrupaLineasAdicionales(valuelines) {
         declaraciones.push(...content);
       } else if (state === "ALCANCE") {
         const [concepto, alcance_loe, fase] = el.slice(-3);
-        alcance.push({ concepto, alcance_loe, fase });
+        if (concepto !== "-" && alcance_loe !== "-" && fase !== "-") {
+          alcance.push({ concepto, alcance_loe, fase });
+        }
       }
     }
     return { declaraciones, alcance };
