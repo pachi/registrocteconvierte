@@ -91,25 +91,31 @@ function lst2obj(lst) {
     fax,
     declaraciones
   ] = lst;
+  const comunidad = utils.prov2ca[provincia.replace(' / ', '/')];
+  if (!comunidad) {
+    console.error("No se ha encontrado la comunidad para la provincia ", provincia);
+  }
   return {
     cod,
     empresa,
     nif,
-    cp,
     direccion,
-    web,
-    observaciones,
+    cp,
     municipio,
-    telefono1,
-    inscripcion_ccaa,
-    referencia,
     provincia,
+    comunidad,
+    telefono1,
     telefono2,
+    fax,
+    email,
+    web,
+    web_url: "",
+    observaciones,
+    referencia,
+    inscripcion_ccaa,
     fecha_alta,
     baja,
     fecha_baja,
-    email,
-    fax,
     declaraciones
   };
 }
@@ -247,21 +253,9 @@ function urlFix(datalist) {
   return datalist;
 }
 
-function addCcaa(datalist) {
-  for (let obj of datalist) {
-    const comunidad = utils.prov2ca[obj.provincia.replace(' / ', '/')];
-    if (!comunidad) {
-      console.log("No se ha encontrado la comunidad para la provincia ", obj.provincia);
-    }
-    obj.comunidad = utils.prov2ca[obj.provincia];
-  }
-  return datalist;
-}
-
 generateAuxFiles(findXML(process.argv));
 const datalist = parseCSV();
 urlFix(datalist);
-addCcaa(datalist);
 
 console.log(`Localizados ${datalist.length} laboratorios`);
 const jsonstring = JSON.stringify(datalist, null, " ");

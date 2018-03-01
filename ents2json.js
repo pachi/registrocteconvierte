@@ -91,24 +91,30 @@ function lst2obj(lst) {
     declaraciones,
     alcance
   ] = lst;
+  const comunidad = utils.prov2ca[provincia.replace(' / ', '/')];
+  if (!comunidad) {
+    console.error("No se ha encontrado la comunidad para la provincia ", provincia);
+  }
   return {
     cod,
     nif,
     empresa,
-    referencia,
-    municipio,
     direccion,
-    web,
-    fecha_alta,
-    provincia,
-    telefono1,
-    inscripcion_ccaa,
-    baja,
     cp,
+    municipio,
+    provincia,
+    comunidad,
+    telefono1,
     telefono2,
-    fecha_baja,
-    email,
     fax,
+    email,
+    web,
+    web_url:"",
+    referencia,
+    inscripcion_ccaa,
+    fecha_alta,
+    baja,
+    fecha_baja,
     declaraciones,
     alcance
   };
@@ -264,21 +270,9 @@ function urlFix(datalist) {
   return datalist;
 }
 
-function addCcaa(datalist) {
-  for (let obj of datalist) {
-    const comunidad = utils.prov2ca[obj.provincia.replace(' / ', '/')];
-    if (!comunidad) {
-      console.log("No se ha encontrado la comunidad para la provincia ", obj.provincia);
-    }
-    obj.comunidad = utils.prov2ca[obj.provincia];
-  }
-  return datalist;
-}
-
 generateAuxFiles(findXML(process.argv));
 const datalist = parseCSV();
 urlFix(datalist);
-addCcaa(datalist);
 
 console.log(`Localizadas ${datalist.length} entidades`);
 const jsonstring = JSON.stringify(datalist, null, " ");
