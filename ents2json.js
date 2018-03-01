@@ -36,7 +36,9 @@ const utils = require("./utils");
 
 function findXML(args) {
   if (args.length < 3) {
-    console.error(`Debe indicar un archivo xml de datos de entidades.\n\n\tnode ents2json "Informe Laboratorios.xls"\n`);
+    console.error(
+      `Debe indicar un archivo xml de datos de entidades.\n\n\tnode ents2json "Informe Laboratorios.xls"\n`
+    );
     process.exit();
   }
   let xlsname = args[2];
@@ -91,9 +93,12 @@ function lst2obj(lst) {
     declaraciones,
     alcance
   ] = lst;
-  const comunidad = utils.prov2ca[provincia.replace(' / ', '/')];
+  const comunidad = utils.prov2ca[provincia.replace(" / ", "/")];
   if (!comunidad) {
-    console.error("No se ha encontrado la comunidad para la provincia ", provincia);
+    console.error(
+      "No se ha encontrado la comunidad para la provincia ",
+      provincia
+    );
   }
   return {
     cod,
@@ -109,7 +114,7 @@ function lst2obj(lst) {
     fax,
     email,
     web,
-    web_url:"",
+    web_url: "",
     referencia,
     inscripcion_ccaa,
     fecha_alta,
@@ -219,6 +224,14 @@ function agrupaLineasAdicionales(valuelines) {
     } else {
       currlines.push(dataline);
     }
+  }
+  // Recoge valores del último objeto
+  const lastobj = objs.pop();
+  if (lastobj) {
+    const coll = collected2fields(currlines);
+    lastobj.declaraciones = coll.declaraciones;
+    lastobj.alcance = coll.alcance;
+    objs.push(lastobj);
   }
   return objs;
 }
