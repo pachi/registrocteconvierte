@@ -121,7 +121,8 @@ function lst2obj(lst) {
     baja,
     fecha_baja,
     declaraciones,
-    alcance
+    alcance,
+    esposteriorRD4102010: true
   };
 }
 
@@ -209,6 +210,22 @@ function agrupaLineasAdicionales(valuelines) {
     return { declaraciones, alcance };
   }
 
+  const esPosteriorRD4102010 = declaraciones => {
+    const [last] = declaraciones.slice(-1);
+    if (last) {
+      //TODO: comprobar fecha posterior a 22/4/2010
+      let [dia, mes, anno] = last.split("/");
+      if (anno > 2010) return true;
+      if (anno < 2010) return false;
+      mes = Number(mes);
+      if (mes > 4) return true;
+      if (mes < 4) return false;
+      dia = Number(dia);
+      if (dia > 22) return true;
+      return false;
+    }
+  };
+
   const objs = [];
   let currlines = [];
   for (const dataline of valuelines) {
@@ -219,6 +236,7 @@ function agrupaLineasAdicionales(valuelines) {
         const coll = collected2fields(currlines);
         lastobj.declaraciones = coll.declaraciones;
         lastobj.alcance = coll.alcance;
+        lastobj.esposteriorRD4102010 = esPosteriorRD4102010(coll.declaraciones);
         objs.push(lastobj);
       }
       objs.push(lst2obj(dataline.slice(0, -3).concat([[], []])));
